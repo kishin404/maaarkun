@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mar君😎</title>
+<link rel="icon" href="IMG_8917.ico" type="image/x-icon">
+<style>
+  /* --- カラー定義 --- */
+  :root {
+    --mustard: #e1ad01;    
+    --black: #1a1a1a;
+    --border: #000000;
+    
+    --blue-green: #009688;   
+    --dull-red: #b85450;     
+    --gray: #888888;         
+    --light-gray: #e0e0e0;   
+    --pure-red: #ff0000;     
+    --sky-blue: #1e90ff;     
+  }
+
+  body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    margin: 0; padding: 0;
+    background-color: #ffffff;
+    color: var(--black);
+    height: 100vh; overflow: hidden;
+  }
+
+  .main-wrapper { display: flex; height: 100vh; width: 100%; }
+
+  .editor-side {
+    flex: 1; overflow-y: auto;
+    padding: 40px 40px 100px 40px; 
+    border-right: 3px solid var(--black);
+    box-sizing: border-box;
+    background-color: #ffffff;
+  }
+
+  .preview-side {
+    flex: 1; overflow-y: auto;
+    padding: 40px;
+    background-color: #fcfcfc;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-weight: 900; font-size: 2rem;
+    margin: 0;
+    color: var(--black);
+    border-bottom: 5px solid var(--pure-red); 
+    display: inline-block;
+  }
+
+  .sub-title-text {
+    color: var(--pure-red); 
+    font-weight: 300;
+    font-size: 1.4rem;
+    margin: 10px 0 20px 0;
+    display: block;
+  }
+
+  .guide-box {
+    background: #f5f5f5;
+    padding: 15px; margin-bottom: 30px;
+    border: 1px solid #ddd;
+    font-size: 0.85rem;
+    border-left: 5px solid #ccc;
+  }
+  .guide-box ul { margin: 0; padding-left: 20px; }
+
+  h2 {
+    font-size: 1.1rem; font-weight: 800;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--black);
+    display: inline-block;
+  }
+
+  .input-group, .section {
+    background: #fff;
+    padding: 25px; margin-bottom: 35px;
+    border: 2px solid var(--border);
+    border-radius: 0 !important;
+  }
+
+  .field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 5px;
+  }
+
+  .field-header label {
+    font-size: 0.8rem; font-weight: 700;
+    margin-bottom: 0; color: var(--black);
+  }
+
+  .field-unit > label {
+    display: block; font-size: 0.8rem; font-weight: 700;
+    margin-bottom: 5px; color: var(--black);
+  }
+
+  .textarea-container { border: 1px solid var(--border); border-radius: 0; overflow: hidden; }
+  
+  .toolbar {
+    background: var(--black);
+    padding: 5px 10px;
+    display: flex; gap: 5px; flex-wrap: wrap;
+  }
+
+  textarea {
+    width: 100%; min-height: 50px;
+    padding: 12px; border: none; border-radius: 0;
+    box-sizing: border-box; font-size: 0.95rem;
+    resize: none; 
+    display: block; overflow: hidden;
+  }
+  .toolbar + textarea { min-height: 110px; font-family: monospace; }
+  textarea:focus { outline: none; background: #fff; }
+
+  button {
+    padding: 10px 20px; cursor: pointer;
+    border: 1px solid var(--black); border-radius: 0;
+    font-weight: 700; font-size: 0.8rem;
+    transition: opacity 0.1s;
+    text-transform: uppercase;
+  }
+  button:hover { opacity: 0.8; }
+
+  .btn-tool {
+    background: var(--blue-green);
+    color: #ffffff;
+    border: none;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+
+  /* --- 装飾ボタン専用のデザイン --- */
+  .btn-tool.tool-bold {
+    font-weight: 900; /* より太く */
+  }
+  .btn-tool.tool-underline {
+    text-decoration: underline; /* 下線を引く */
+  }
+  .btn-tool.tool-highlight {
+    background-color: #ffeb3b; /* 黄色背景 */
+    color: var(--black); /* 黒文字 */
+  }
+
+  .btn-field-reset {
+    background: var(--light-gray);
+    color: var(--black); 
+    border: 1px solid #ccc; 
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: bold;
+  }
+
+  .btn-action {
+    background-color: var(--blue-green);
+    color: white; margin-right: 5px; margin-bottom: 5px;
+  }
+
+  .btn-delete {
+    background: linear-gradient(to right, var(--dull-red) 50%, #fff 50%);
+    background-size: 200% 100%;
+    background-position: right bottom;
+    color: var(--dull-red);
+    border-color: var(--dull-red);
+    transition: opacity 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .btn-delete.pressing {
+    background-position: left bottom;
+    color: #fff;
+    transition: background-position 1s linear, color 1s linear;
+    opacity: 1;
+  }
+
+  .section-title {
+    font-weight: 900; font-size: 1.2rem;
+    margin-bottom: 20px; display: block;
+    color: var(--blue-green);
+    border-left: 10px solid var(--black); 
+    padding-left: 10px;
+  }
+
+  .section-btn-group {
+    margin-top: 25px; padding-top: 15px;
+    border-top: 2px dashed var(--black); 
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+
+  #initialButtons {
+    text-align: center; padding: 40px;
+    border: 2px dashed var(--blue-green);
+    margin-bottom: 30px;
+  }
+
+  #output {
+    height: 120px; background: #f4f4f4;
+    border: 1px solid var(--black); margin-top: 20px;
+    overflow-y: auto; 
+  }
+
+  #preview h1 { font-size: 1.8rem; border-bottom: 4px solid var(--black); padding-bottom: 10px; display: block; }
+  #preview h2 { border-bottom: 2px solid var(--black); display: block; font-size: 1.3rem; margin-top: 2rem; }
+  #preview blockquote {
+    border-left: 8px solid var(--mustard);
+    background: #f9f9f9; padding: 15px; margin: 1.5em 0;
+  }
+  #preview pre {
+    background: #2b2b2b; color: #f8f8f2;
+    padding: 15px; border-radius: 5px;
+    overflow-x: auto; margin: 1.5em 0;
+  }
+  #preview code { font-family: monospace; }
+  #preview mark { background-color: #ffeb3b; padding: 0 5px; border-radius: 2px; }
+
+  .preview-img-placeholder {
+    display: block; padding: 20px;
+    border: 2px solid var(--blue-green);
+    margin: 15px 0; text-align: center;
+    font-weight: bold; background: #fff; color: var(--blue-green);
+  }
+
+  .footer-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 50%; 
+    background: var(--black);
+    display: flex;
+    border-top: 3px solid var(--gray);
+    z-index: 1000;
+  }
+  .footer-bar button {
+    flex: 1; height: 60px; border: none; font-size: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="main-wrapper">
+  <div class="editor-side">
+    <h1>Mar君😎</h1>
+    <span class="sub-title-text">コピーしたMarkdownテキストをmdファイルに貼り付けるだけ</span>
+    
+    <div class="guide-box">
+      <ul>
+        <li><strong>空欄の省略：</strong> 入力欄が空白の項目は、出力時にスキップされます。</li>
+        <li><strong>自動拡張：</strong> テキストが長くなると入力欄が自動で広がります。</li>
+        <li><strong>装飾ツール：</strong> 強調、下線、ハイライトはマークダウンやHTMLタグに変換されます。</li>
+        <li><strong>自由な項目：</strong> 各セクションの「＋ 項目を追加」で好きな見出しを挿入できます。</li>
+      </ul>
+    </div>
+
+    <div class="input-group">
+      <h2>基本情報</h2>
+      <div class="field-unit">
+        <div class="field-header">
+          <label>タイトル</label>
+          <button class="btn-field-reset" onclick="clearField('title')">入力をリセット</button>
+        </div>
+        <textarea id="title" placeholder="第1回 〇〇実験"></textarea>
+      </div>
+      <div class="field-unit">
+        <div class="field-header">
+          <label>学籍番号</label>
+          <button class="btn-field-reset" onclick="clearField('studentId')">入力をリセット</button>
+        </div>
+        <textarea id="studentId" placeholder="2I19"></textarea>
+      </div>
+      <div class="field-unit">
+        <div class="field-header">
+          <label>名前</label>
+          <button class="btn-field-reset" onclick="clearField('name')">入力をリセット</button>
+        </div>
+        <textarea id="name" placeholder="山田 太郎"></textarea>
+      </div>
+      <div class="field-unit">
+        <div class="field-header">
+          <label>目的</label>
+          <button class="btn-field-reset" onclick="clearField('purpose')">入力をリセット</button>
+        </div>
+        <div class="textarea-container">
+          <div class="toolbar">
+            <button class="btn-tool" onclick="addList('-', 'purpose')">・箇条書き</button>
+            <button class="btn-tool tool-bold" onclick="insertWrap('**', '**', 'purpose')">強調</button>
+            <button class="btn-tool tool-underline" onclick="insertWrap('<u>', '</u>', 'purpose')">下線</button>
+            <button class="btn-tool tool-highlight" onclick="insertWrap('<mark>', '</mark>', 'purpose')">ハイライト</button>
+          </div>
+          <textarea id="purpose"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div id="mainContainer"></div>
+
+    <div id="initialButtons">
+      <button class="btn-action" onclick="addSection('experiment')">＋ 実験を追加</button>
+      <button class="btn-action" onclick="addSection('exercise')">＋ 演習を追加</button>
+    </div>
+
+    <div class="input-group">
+      <h2>全体まとめ</h2>
+      <div class="field-unit">
+        <div class="field-header">
+          <label>感想</label>
+          <button class="btn-field-reset" onclick="clearField('impression')">入力をリセット</button>
+        </div>
+        <div class="textarea-container">
+          <div class="toolbar">
+            <button class="btn-tool" onclick="addList('-', 'impression')">・箇条書き</button>
+            <button class="btn-tool tool-bold" onclick="insertWrap('**', '**', 'impression')">強調</button>
+            <button class="btn-tool tool-underline" onclick="insertWrap('<u>', '</u>', 'impression')">下線</button>
+            <button class="btn-tool tool-highlight" onclick="insertWrap('<mark>', '</mark>', 'impression')">ハイライト</button>
+          </div>
+          <textarea id="impression"></textarea>
+        </div>
+      </div>
+      <div class="field-unit">
+        <div class="field-header">
+          <label>考察（全体）</label>
+          <button class="btn-field-reset" onclick="clearField('finalDiscussion')">入力をリセット</button>
+        </div>
+        <div class="textarea-container">
+          <div class="toolbar">
+            <button class="btn-tool" onclick="addList('-', 'finalDiscussion')">・箇条書き</button>
+            <button class="btn-tool tool-bold" onclick="insertWrap('**', '**', 'finalDiscussion')">強調</button>
+            <button class="btn-tool tool-underline" onclick="insertWrap('<u>', '</u>', 'finalDiscussion')">下線</button>
+            <button class="btn-tool tool-highlight" onclick="insertWrap('<mark>', '</mark>', 'finalDiscussion')">ハイライト</button>
+          </div>
+          <textarea id="finalDiscussion"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <h2>Markdown Output</h2>
+    <textarea id="output" readonly></textarea>
+  </div>
+
+  <div class="preview-side">
+    <div id="preview"></div>
+  </div>
+</div>
+
+<div class="footer-bar">
+  <button onclick="copyOutput()" id="copyBtn" style="background: var(--sky-blue); color: #fff;">Markdownをコピー</button>
+  <button onclick="resetAll()" style="background: var(--dull-red); color: #fff;">リセット</button>
+</div>
+
+<script>
+let fieldIdCounter = 0;
+
+function autoResize(textarea) {
+  if (textarea.id === "output") return; 
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+function setupTextarea(textarea) {
+  textarea.addEventListener('dragover', (e) => { e.preventDefault(); textarea.classList.add('dragover'); });
+  textarea.addEventListener('dragleave', () => { textarea.classList.remove('dragover'); });
+  textarea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    textarea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.match('image.*')) {
+      const start = textarea.selectionStart;
+      const text = `![画像:${file.name}](${file.name})\n`;
+      textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(textarea.selectionEnd);
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+      autoResize(textarea);
+      updateAll();
+    }
+  });
+}
+
+function addList(prefix, targetId) {
+  const textarea = document.getElementById(targetId);
+  const start = textarea.selectionStart;
+  const text = textarea.value;
+  let insert = (start > 0 && text[start-1] !== '\n') ? `\n${prefix} ` : `${prefix} `;
+  textarea.value = text.substring(0, start) + insert + text.substring(textarea.selectionEnd);
+  textarea.selectionStart = textarea.selectionEnd = start + insert.length;
+  textarea.focus();
+  autoResize(textarea);
+  updateAll();
+}
+
+function insertWrap(startTag, endTag, targetId) {
+  const textarea = document.getElementById(targetId);
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
+  const selectedText = text.substring(start, end);
+  
+  const insertText = startTag + selectedText + endTag;
+  textarea.value = text.substring(0, start) + insertText + text.substring(end);
+  
+  if (selectedText.length === 0) {
+    textarea.selectionStart = textarea.selectionEnd = start + startTag.length;
+  } else {
+    textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
+  }
+  
+  textarea.focus();
+  autoResize(textarea);
+  updateAll();
+}
+
+function clearField(id) {
+  const textarea = document.getElementById(id);
+  textarea.value = "";
+  autoResize(textarea);
+  updateAll();
+}
+
+let deletePressTimer;
+function startDelete(btn) {
+  btn.classList.add('pressing');
+  deletePressTimer = setTimeout(() => {
+    btn.classList.remove('pressing');
+    deleteSection(btn);
+  }, 1000); 
+}
+
+function cancelDelete(btn) {
+  btn.classList.remove('pressing');
+  clearTimeout(deletePressTimer);
+}
+
+function deleteSection(btn) {
+  btn.closest('.section').remove();
+  if(document.querySelectorAll(".section").length === 0) document.getElementById("initialButtons").style.display = "block";
+  updateAll();
+}
+
+function generateFieldHtml(targetId, labelText) {
+  return `
+    <div class="field-unit" data-label="${labelText}">
+      <div class="field-header">
+        <label>${labelText}</label>
+        <button class="btn-field-reset" onclick="clearField('${targetId}')">入力をリセット</button>
+      </div>
+      <div class="textarea-container">
+        <div class="toolbar">
+          <button class="btn-tool" onclick="addList('-', '${targetId}')">・箇条書き</button>
+          <button class="btn-tool tool-bold" onclick="insertWrap('**', '**', '${targetId}')">強調</button>
+          <button class="btn-tool tool-underline" onclick="insertWrap('<u>', '</u>', '${targetId}')">下線</button>
+          <button class="btn-tool tool-highlight" onclick="insertWrap('<mark>', '</mark>', '${targetId}')">ハイライト</button>
+        </div>
+        <textarea id="${targetId}" class="dynamic-textarea"></textarea>
+      </div>
+    </div>
+  `;
+}
+
+function addCustomField(btn) {
+  const name = prompt("追加する項目名を入力してください:");
+  if (!name) return;
+  const container = btn.closest('.section').querySelector('.fields-container');
+  const id = 'custom' + fieldIdCounter++;
+  container.insertAdjacentHTML('beforeend', generateFieldHtml(id, name));
+  
+  const newTextarea = document.getElementById(id);
+  setupTextarea(newTextarea);
+  autoResize(newTextarea);
+  updateAll();
+}
+
+function createSectionElement(type) {
+  const div = document.createElement("div");
+  div.className = "section";
+  div.dataset.type = type;
+  const id = fieldIdCounter++;
+  
+  let html = `<span class="section-title"></span><div class="fields-container">`;
+  html += generateFieldHtml(`c${id}`, '内容');
+  html += generateFieldHtml(`code${id}`, 'コード');
+  html += generateFieldHtml(`r${id}`, '結果');
+  html += generateFieldHtml(`d${id}`, '検討');
+  html += `</div>`;
+  
+  html += `
+    <div class="section-btn-group">
+      <div>
+        <button class="btn-action" onclick="addCustomField(this)">＋項目を追加</button>
+        <button class="btn-action" onclick="addSection('experiment', this)">＋実験を追加</button>
+        <button class="btn-action" onclick="addSection('exercise', this)">＋演習を追加</button>
+      </div>
+      <button class="btn-delete" onmousedown="startDelete(this)" onmouseup="cancelDelete(this)" onmouseleave="cancelDelete(this)" ontouchstart="startDelete(this)" ontouchend="cancelDelete(this)" oncontextmenu="return false;">長押しで削除</button>
+    </div>
+  `;
+  div.innerHTML = html;
+  div.querySelectorAll('textarea').forEach(setupTextarea);
+  return div;
+}
+
+function addSection(type, btn = null) {
+  const newSec = createSectionElement(type);
+  if (btn) btn.closest('.section').after(newSec);
+  else document.getElementById("mainContainer").appendChild(newSec);
+  document.getElementById("initialButtons").style.display = "none";
+  updateAll();
+}
+
+function updateAll() {
+  const sections = document.querySelectorAll(".section");
+  let counts = { experiment: 0, exercise: 0 };
+  sections.forEach(s => counts[s.dataset.type]++);
+  
+  let current = { experiment: 0, exercise: 0 };
+  sections.forEach(s => {
+    const type = s.dataset.type;
+    current[type]++;
+    const label = type === 'experiment' ? (counts.experiment > 1 ? `実験${current.experiment}` : "実験") : (counts.exercise > 1 ? `演習${current.exercise}` : "演習");
+    s.querySelector(".section-title").textContent = label;
+  });
+
+  let md = "";
+  const v = (id) => document.getElementById(id).value;
+  if (v('title')) md += `# ${v('title')}\n\n`;
+  if (v('studentId') || v('name')) md += `${v('studentId')} ${v('name')}\n\n`;
+  if (v('purpose')) md += `## 目的\n> ${v('purpose')}\n\n`;
+
+  sections.forEach(s => {
+    md += `## ${s.querySelector(".section-title").textContent}\n\n`;
+    const fields = s.querySelectorAll(".field-unit");
+    
+    fields.forEach(f => {
+      const labelText = f.dataset.label;
+      const val = f.querySelector("textarea").value;
+      if (val) {
+        if (labelText === "内容") {
+          md += `### ${labelText}\n> ${val}\n\n`;
+        } else if (labelText === "コード") {
+          md += `### ${labelText}\n\`\`\`\n${val}\n\`\`\`\n\n`; 
+        } else {
+          md += `### ${labelText}\n${val}\n\n`;
+        }
+      }
+    });
+  });
+
+  if (v('impression')) md += `## 感想\n${v('impression')}\n\n`;
+  if (v('finalDiscussion')) md += `## 考察\n${v('finalDiscussion')}\n\n`;
+
+  document.getElementById("output").value = md;
+  
+  let html = md.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  
+  html = html.replace(/&lt;u&gt;/g, "<u>").replace(/&lt;\/u&gt;/g, "</u>");
+  html = html.replace(/&lt;mark&gt;/g, "<mark>").replace(/&lt;\/mark&gt;/g, "</mark>");
+  
+  html = html.replace(/```\n?([\s\S]*?)\n?```/gm, function(match, p1) {
+      return "<pre><code>" + p1 + "</code></pre>";
+  });
+
+  html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>")
+             .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+             .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+             .replace(/^&gt; (.*$)/gim, "<blockquote>$1</blockquote>")
+             .replace(/!\[(.*?)\]\((.*?)\)/gim, `<div class="preview-img-placeholder">📷 画像: $2</div>`)
+             .replace(/^- (.*$)/gim, "<li>$1</li>")
+             .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); 
+
+  let parts = html.split(/(<pre><code>[\s\S]*?<\/code><\/pre>)/);
+  for(let i=0; i<parts.length; i++) {
+      if(!parts[i].startsWith("<pre>")) {
+          parts[i] = parts[i].replace(/\n/g, "<br>");
+      }
+  }
+  document.getElementById("preview").innerHTML = parts.join("");
+}
+
+function copyOutput(){
+  navigator.clipboard.writeText(document.getElementById("output").value).then(() => {
+    document.getElementById("copyBtn").textContent = "コピー完了！";
+    setTimeout(() => document.getElementById("copyBtn").textContent = "Markdownをコピー", 1500);
+  });
+}
+
+function resetAll(){ if(confirm("全て消去しますか？")) location.reload(); }
+
+document.querySelectorAll("textarea:not(#output)").forEach(el => {
+  setupTextarea(el);
+  autoResize(el);
+});
+document.addEventListener("input", (e) => { 
+  if(e.target.tagName === "TEXTAREA") {
+    autoResize(e.target);
+    updateAll(); 
+  }
+});
+</script>
+
+</body>
+</html>
