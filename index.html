@@ -639,7 +639,13 @@ function updateAll() {
   });
 
   let md = "";
-  const v = (id) => document.getElementById(id).value;
+  
+  // ▼変更点1：基礎項目の取得時に「改行」を「 \ + 改行」に自動変換する
+  const v = (id) => {
+    let text = document.getElementById(id).value;
+    return text.replace(/\n/g, "\\\n"); 
+  };
+
   if (v('title')) md += `# ${v('title')}\n\n`;
   if (v('studentId') || v('name')) md += `${v('studentId')} ${v('name')}\n\n`;
   if (v('purpose')) md += `## 目的\n> ${v('purpose')}\n\n`;
@@ -648,11 +654,19 @@ function updateAll() {
     md += `## ${s.querySelector(".section-title").textContent}\n\n`;
     s.querySelectorAll(".field-unit").forEach(f => {
       const labelText = f.dataset.label;
-      const val = f.querySelector("textarea").value;
+      let val = f.querySelector("textarea").value;
+      
       if (val) {
-        if (labelText === "内容") md += `### ${labelText}\n> ${val}\n\n`;
-        else if (labelText === "コード") md += `### ${labelText}\n\`\`\`\n${val}\n\`\`\`\n\n`; 
-        else md += `### ${labelText}\n${val}\n\n`;
+        // ▼変更点2：コードブロック「以外」にだけ \ をつけるように条件分岐！
+        if (labelText === "コード") {
+          md += `### ${labelText}\n\`\`\`\n${val}\n\`\`\`\n\n`; 
+        } else if (labelText === "内容") {
+          val = val.replace(/\n/g, "\\\n");
+          md += `### ${labelText}\n> ${val}\n\n`;
+        } else {
+          val = val.replace(/\n/g, "\\\n");
+          md += `### ${labelText}\n${val}\n\n`;
+        }
       }
     });
   });
@@ -673,18 +687,23 @@ function updateAll() {
   });
   
   let html = md.replace(/</g, "&lt;").replace(/>/g, "&gt;")
-               .replace(/&lt;u&gt;/g, "<u>").replace(/&lt;\/u&gt;/g, "</u>")
-               .replace(/&lt;mark&gt;/g, "<mark>").replace(/&lt;\/mark&gt;/g, "</mark>")
-               .replace(/```\n?([\s\S]*?)\n?```/gm, (match, p1) => "<pre><code>" + p1 + "</code></pre>")
-               .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-               .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-               .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-               .replace(/^&gt; (.*$)/gim, "<blockquote>$1</blockquote>")
-               .replace(/!\[(.*?)\]\((.*?)\)/gim, `<div class="preview-img-placeholder">📷 画像: $2</div>`)
-               .replace(/^- (.*$)/gim, "<li>$1</li>")
-               .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); 
+                 .replace(/&lt;u&gt;/g, "<u>").replace(/&lt;\/u&gt;/g, "</u>")
+                 .replace(/&lt;mark&gt;/g, "<mark>").replace(/&lt;\/mark&gt;/g, "</mark>")
+                 .replace(/```\n?([\s\S]*?)\n?```/gm, (match, p1) => "<pre><code>" + p1 + "</code></pre>")
+                 .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+                 .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+                 .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+                 .replace(/^&gt; (.*$)/gim, "<blockquote>$1</blockquote>")
+                 .replace(/!\[(.*?)\]\((.*?)\)/gim, `<div class="preview-img-placeholder">📷 画像: $2</div>`)
+                 .replace(/^- (.*$)/gim, "<li>$1</li>")
+                 .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); 
   let parts = html.split(/(<pre><code>[\s\S]*?<\/code><\/pre>)/);
-  for(let i=0; i<parts.length; i++) { if(!parts[i].startsWith("<pre>")) parts[i] = parts[i].replace(/\n/g, "<br>"); }
+  for(let i=0; i<parts.length; i++) { 
+    if(!parts[i].startsWith("<pre>")) {
+      // ▼変更点3：プレビュー画面に \ がそのまま表示されないように、\ を消してから改行する
+      parts[i] = parts[i].replace(/\\\n/g, "<br>").replace(/\n/g, "<br>"); 
+    }
+  }
   document.getElementById("preview").innerHTML = parts.join("");
   saveData();
 }
