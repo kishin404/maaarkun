@@ -378,6 +378,48 @@
     background-color: #2d333b;       /* 背景を暗い色に */
     color: #adbac7;                  /* 文字色を見やすい明るさに */
   }
+  /* ▼ 1. 引用（blockquote）をオシャレなマスタード色に！ ▼ */
+  #preview blockquote {
+    border-left: 5px solid #e5b73b; /* ここが絶妙なマスタード色！ */
+    padding: 0.5em 1em;
+    margin: 0.8em 0;
+    color: #555;
+    background-color: #fdfbf5; /* マスタードに合う、ほんのり暖かみのある背景色 */
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* ダークモード用の渋いマスタード調整 */
+  body.dark-mode #preview blockquote {
+    border-left: 5px solid #cfa028;
+    color: #ddd;
+    background-color: #2a2824;
+  }
+
+  /* ▼ 2. プレビューの文字間隔を本物のMarkdown（GitHub風）に近づける ▼ */
+  #preview {
+    line-height: 1.6;
+  }
+  #preview h1, #preview h2, #preview h3 {
+    margin-top: 1.2em;
+    margin-bottom: 0.4em;
+    line-height: 1.2;
+  }
+  #preview h2 {
+    border-bottom: 1px solid #ddd; /* H2の下に薄い線を引くと一気に本格的になります */
+    padding-bottom: 0.3em;
+  }
+  body.dark-mode #preview h2 {
+    border-bottom: 1px solid #444;
+  }
+
+  /* ▼ 3. 縦幅を広げていた犯人（余分な改行タグ）を隠す魔法 ▼ */
+  #preview h1 + br, #preview h1 + br + br,
+  #preview h2 + br, #preview h2 + br + br,
+  #preview h3 + br, #preview h3 + br + br,
+  #preview blockquote + br, #preview blockquote + br + br,
+  #preview pre + br, #preview pre + br + br {
+    display: none;
+}
 </style>
 </head>
 <body>
