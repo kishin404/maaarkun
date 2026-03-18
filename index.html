@@ -419,7 +419,17 @@
   #preview blockquote + br, #preview blockquote + br + br,
   #preview pre + br, #preview pre + br + br {
     display: none;
-}
+  }
+  /* ▼ タイトルと学籍番号が絶対に横並びにならないようにする魔法 ▼ */
+  #preview {
+    display: block !important; 
+  }
+  #preview h1 {
+    display: block !important;
+    width: 100%;
+    clear: both;
+    margin-bottom: 8px !important; /* タイトルと名前の間の「絶妙なスキマ」を指定 */
+  }
 </style>
 </head>
 <body>
@@ -845,7 +855,8 @@ function updateAll() {
     return result;
   };
 
-  if (v('title')) md += `# ${v('title')}\n\n`;
+  // ▼ \n（改行）を1つに減らすことで、HTMLになった時の無駄なスキマを消します！
+  if (v('title')) md += `# ${v('title')}\n`; 
   if (v('studentId') || v('name')) md += `${v('studentId')} ${v('name')}\n\n`;
   if (v('purpose')) md += `## 目的\n${formatQuoteAndText(v('purpose'))}\n\n`;
 
