@@ -475,8 +475,8 @@
   }
 
   /* ▼ 入力欄（textarea）をコンパクトにする魔法 ▼ */
-  .dynamic-textarea {
-    min-height: auto !important; /* 最小の高さを解除 */
+  textarea:not(#output):not(#reviewText) {
+    min-height: auto !important; /* 最小の高さを解除（基本情報も含む！） */
     padding: 6px 8px !important; /* 内側の上下のスキマを減らす */
     line-height: 1.5 !important;
     overflow-y: hidden !important; /* 余分なスクロールバーを隠す */
