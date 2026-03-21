@@ -549,10 +549,10 @@
       <div>
         <button class="btn-action" onclick="addSection('experiment')">＋実験を追加</button>
         <button class="btn-action" onclick="addSection('exercise')">＋演習を追加</button>
-        <button class="btn-action" onclick="addCustomSection()">＋独自セクション</button>
+        <button class="btn-action" onclick="addCustomSection()">＋新しい大見出し</button>
       </div>
       <div>
-        <button class="btn-action-sub" onclick="addStandaloneSubheading()">＋独自小見出し</button>
+        <button class="btn-action-sub" onclick="addStandaloneSubheading()">＋新しい小見出し</button>
       </div>
     </div>
     <div class="input-group">
@@ -784,11 +784,11 @@ function createSectionElement(type, fieldsData = null, customName = "") {
         <div>
           <button class="btn-action" onclick="addSection('experiment', this)">＋実験を追加</button>
           <button class="btn-action" onclick="addSection('exercise', this)">＋演習を追加</button>
-          <button class="btn-action" onclick="addCustomSection(this)">＋独自セクション</button>
+          <button class="btn-action" onclick="addCustomSection(this)">＋新しい大見出し</button>
         </div>
         <div>
           <button class="btn-action-sub" onclick="addCustomField(this)">＋項目を追加</button>
-          <button class="btn-action-sub" onclick="addStandaloneSubheading(this)">＋独自小見出し</button>
+          <button class="btn-action-sub" onclick="addStandaloneSubheading(this)">＋新しい小見出し</button>
         </div>
       </div>
       <div style="display: flex; gap: 5px; height: 100%; align-items: flex-end;">
@@ -868,10 +868,10 @@ function createSubheadingElement(name, value = "") {
         <div>
           <button class="btn-action" onclick="addSection('experiment', this)">＋実験を追加</button>
           <button class="btn-action" onclick="addSection('exercise', this)">＋演習を追加</button>
-          <button class="btn-action" onclick="addCustomSection(this)">＋独自セクション</button>
+          <button class="btn-action" onclick="addCustomSection(this)">＋新しい大見出し</button>
         </div>
         <div>
-          <button class="btn-action-sub" onclick="addStandaloneSubheading(this)">＋独自小見出し</button>
+          <button class="btn-action-sub" onclick="addStandaloneSubheading(this)">＋新しい小見出し</button>
         </div>
       </div>
       <div style="display: flex; gap: 5px; height: 100%; align-items: flex-end;">
@@ -958,7 +958,7 @@ function updateAll() {
     // ▼ それ以外の普通のセクションの処理
     else {
       let label = "";
-      if (type === "custom") label = s.dataset.customName || "独自セクション";
+      if (type === "custom") label = s.dataset.customName || "新しい大見出し";
       else {
         current[type]++;
         label = type === 'experiment' ? (counts.experiment > 1 ? `実験${current.experiment}` : "実験") : (counts.exercise > 1 ? `演習${current.exercise}` : "演習");
